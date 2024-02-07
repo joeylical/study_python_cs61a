@@ -21,7 +21,7 @@ def composer(func=lambda x: x):
     """
     def func_adder(g):
         "*** YOUR CODE HERE ***"
-        return func(g), composer(func(g))
+        return composer(lambda x: func(g(x)))
     return func, func_adder
 
 
@@ -108,9 +108,13 @@ def missing_digits(n):
     """
     "*** YOUR CODE HERE ***"
     other, last_digit = n // 10, n % 10
-    last2_digit = other // 10
+    last2_digit = other % 10
     if last2_digit != 0:
-        return missing_digits(other) + last_digit - last2_digit - 1
+        if last_digit > last2_digit:
+            missing = last_digit - last2_digit - 1
+        else:
+            missing = 0
+        return missing_digits(other) + missing
     else:
         return 0
 
@@ -132,7 +136,20 @@ def count_change(total):
     True
     """
     "*** YOUR CODE HERE ***"
-    
+    # fixme: refer: https://github.com/nlinx/CS61A/blob/master/hw3.py#L104
+    # todo: redo it later
+    def finder(min_coin, total):
+        if total < 0:
+            return 0
+        elif total == 1:
+            return 1
+        elif min_coin > total:
+            return 0
+        else:
+            use_min_count = finder(min_coin, total - min_coin)
+            use_min2_count = finder(min_coin*2, total - min_coin)
+            return use_min_count + use_min2_count
+    return finder(1, total)
 
 
 def print_move(origin, destination):
@@ -168,7 +185,13 @@ def move_stack(n, start, end):
     """
     assert 1 <= start <= 3 and 1 <= end <= 3 and start != end, "Bad start/end"
     "*** YOUR CODE HERE ***"
-
+    if n == 1:
+        print_move(start, end)
+    else:
+        spare = 1*2*3//start//end
+        move_stack(n-1, start, spare)
+        move_stack(1, start, end)
+        move_stack(n-1, spare, end)
 
 from operator import sub, mul
 
@@ -182,5 +205,15 @@ def make_anonymous_factorial():
     >>> check(HW_SOURCE_FILE, 'make_anonymous_factorial', ['Assign', 'AugAssign', 'FunctionDef', 'Recursion'])
     True
     """
-    return 'YOUR_EXPRESSION_HERE'
+    return lambda x: (lambda f:)
+
+
+
+"""
+
+f = lambda x: x*f(x-1) if x else 1
+
+Y = lambda f: f(f)
+
+"""
 

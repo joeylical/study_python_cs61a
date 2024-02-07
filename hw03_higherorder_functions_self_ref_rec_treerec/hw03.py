@@ -205,15 +205,7 @@ def make_anonymous_factorial():
     >>> check(HW_SOURCE_FILE, 'make_anonymous_factorial', ['Assign', 'AugAssign', 'FunctionDef', 'Recursion'])
     True
     """
-    return lambda x: (lambda f:)
-
-
-
-"""
-
-f = lambda x: x*f(x-1) if x else 1
-
-Y = lambda f: f(f)
-
-"""
+    # https://rosettacode.org/wiki/Y_combinator#Python
+    # todo: do it later
+    return (lambda f:(lambda x:x(x))(lambda y:f(lambda n:y(y)(n))))(lambda f:lambda n:(1 if n == 1 else n*f(n-1)))
 

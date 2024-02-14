@@ -331,9 +331,7 @@ def div_interval(x, y):
     any value in y. Division is implemented as the multiplication of x by the
     reciprocal of y."""
     "*** YOUR CODE HERE ***"
-    assert upper_bound(x) * lower_bound(x) < 0
-    # problem here?
-    # assert upper_bound(y) * lower_bound(y) < 0
+    assert not (upper_bound(y) * lower_bound(y) < 0)
     reciprocal_y = interval(1/upper_bound(y), 1/lower_bound(y))
     return mul_interval(x, reciprocal_y)
 
@@ -352,19 +350,14 @@ def quadratic(x, a, b, c):
     '0 to 10'
     """
     "*** YOUR CODE HERE ***"
+    # should use xxx_interval ?
     m = -b / (2 * a)
+    f = lambda v: a * v * v + b * v + c
     if m < lower_bound(x) or m > upper_bound(x):
-        i1 = mul_interval(x, x)
-        i1 = mul_interval(i1, interval(a, a))
-
-        i2 = mul_interval(x, interval(b, b))
-
-        i3 = interval(c, c)
-        y = add_interval(i1, i2)
-        y = add_interval(y, i3)
-        return y
+        p1 = f(lower_bound(x))
+        p2 = f(upper_bound(x))
+        return interval(p1, p2)
     else:
-        f = lambda v: a * v * v + b * v + c
         if a < 0:
             ub = f(m)
             lb = min(f(lower_bound(x)), f(upper_bound(x)))
@@ -373,27 +366,6 @@ def quadratic(x, a, b, c):
             lb = f(m)
             ub = max(f(lower_bound(x)), f(upper_bound(x)))
             return interval(lb, ub)
-
-def testq():
-    x = interval(1, 3)
-    a = 2
-    b = -3
-    c = 1
-    i1 = mul_interval(x, x)
-    print(str_interval(i1))
-    i1 = mul_interval(i1, interval(a, a))
-    print(str_interval(i1))
-
-    i2 = mul_interval(x, interval(b, b))
-    print(str_interval(i2))
-
-    i3 = interval(c, c)
-    print(str_interval(i3))
-
-    y = add_interval(i1, i2)
-    print(str_interval(y))
-    y = add_interval(y, i3)
-    print(str_interval(y))
 
 
 def par1(r1, r2):
@@ -413,8 +385,8 @@ def check_par():
     >>> lower_bound(x) != lower_bound(y) or upper_bound(x) != upper_bound(y)
     True
     """
-    r1 = interval(1, 1) # Replace this line!
-    r2 = interval(1, 1) # Replace this line!
+    r1 = interval(0.5, 2) # Replace this line!
+    r2 = interval(1, 3) # Replace this line!
     return r1, r2
 
 

@@ -50,6 +50,36 @@ class VendingMachine:
     'Here is your soda.'
     """
     "*** YOUR CODE HERE ***"
+    def __init__(self, name, price):
+        self._name = name
+        self._price = price
+        self._inventory = 0
+        self._fund = 0
+
+    def vend(self):
+        if self._inventory == 0:
+            return 'Inventory empty. Restocking required.'
+        if self._fund >= self._price:
+            self._fund -= self._price
+            self._inventory -= 1
+            if self._fund == 0:
+                return f'Here is your {self._name}.'
+            else:
+                fund = self._fund
+                self._fund = 0
+                return f'Here is your {self._name} and ${fund} change.'
+        else:
+            return f'You must add ${self._price - self._fund} more funds.'
+        
+    def add_funds(self, fund):
+        if self._inventory == 0:
+            return f'Inventory empty. Restocking required. Here is your ${fund}.'
+        self._fund += fund
+        return f'Current balance: ${self._fund}'
+    
+    def restock(self, inventory):
+        self._inventory += inventory
+        return f'Current {self._name} stock: {self._inventory}'
 
 
 class Mint:
@@ -88,9 +118,11 @@ class Mint:
 
     def create(self, kind):
         "*** YOUR CODE HERE ***"
+        return kind(self.year)
 
     def update(self):
         "*** YOUR CODE HERE ***"
+        self.year = self.current_year
 
 class Coin:
     def __init__(self, year):
@@ -98,6 +130,9 @@ class Coin:
 
     def worth(self):
         "*** YOUR CODE HERE ***"
+        if Mint.current_year > self.year + 50:
+            return self.cents + Mint.current_year - self.year - 50
+        return self.cents
 
 class Nickel(Coin):
     cents = 5
@@ -132,7 +167,22 @@ def is_bst(t):
     False
     """
     "*** YOUR CODE HERE ***"
-
+    def r_is_bst(t):
+        if t.is_leaf():
+            return True, t.label
+        if len(t.branches) > 2:
+            return False, 0
+        if len(t.branches) == 2:
+            if not( t.branches[0].label <= t.label <= t.branches[1].label ):
+                return False, 0
+            else:
+                l_b, l_v = r_is_bst(t.branches[0])
+                r_b, r_v = r_is_bst(t.branches[1])
+                return l_b and r_b and l_v <= t.label <= r_v, r_v
+        else:
+            return r_is_bst(t.branches[0])
+    b, _ = r_is_bst(t)
+    return b
 
 def store_digits(n):
     """Stores the digits of a positive number n in a linked list.
@@ -150,6 +200,11 @@ def store_digits(n):
     >>> print("Do not use str or reversed!") if any([r in cleaned for r in ["str", "reversed"]]) else None
     """
     "*** YOUR CODE HERE ***"
+    link = ()
+    while n > 0:
+        link = Link(n % 10, link)
+        n //= 10
+    return link
 
 
 def path_yielder(t, value):
@@ -189,10 +244,20 @@ def path_yielder(t, value):
 
     "*** YOUR CODE HERE ***"
 
-    for _______________ in _________________:
-        for _______________ in _________________:
+    # a little like BFS?
+    paths = [[t]]
 
-            "*** YOUR CODE HERE ***"
+    while len(paths) > 0:
+        new_path = []
+        for path in paths:
+            for b in path[-1].branches:
+                "*** YOUR CODE HERE ***"
+                npath = path + [b]
+                if b.label == value:
+                    yield [i.label for i in npath]
+                if not b.is_leaf():
+                    new_path.append(npath)
+        paths = new_path
 
 
 def remove_all(link , value):
@@ -213,6 +278,11 @@ def remove_all(link , value):
     <0 1>
     """
     "*** YOUR CODE HERE ***"
+    while link.rest:
+        if link.rest.first == value:
+            link.rest = link.rest.rest
+        else:
+            link = link.rest
 
 
 def deep_map(f, link):
@@ -229,6 +299,14 @@ def deep_map(f, link):
     <<2 <4 6> 8> <<10>>>
     """
     "*** YOUR CODE HERE ***"
+    def do_f(l):
+        if isinstance(l, Link):
+            return deep_map(f, l)
+        elif l:
+            return f(l)
+        else:
+            return ()
+    return Link(do_f(link.first), do_f(link.rest))
 
 
 class Tree:

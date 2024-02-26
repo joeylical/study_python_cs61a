@@ -32,11 +32,11 @@ def validate_type(val, predicate, k, name):
     """Returns VAL.  Raises a SchemeError if not PREDICATE(VAL)
     using "argument K of NAME" to describe the offending value."""
     if not predicate(val):
-        msg = "argument {0} of {1} has wrong type ({2})"
+        msg = "argument {0} of {1} has wrong type ({2})({3})"
         type_name = type(val).__name__
         if scheme_symbolp(val):
             type_name = "symbol"
-        raise SchemeError(msg.format(k, name, type_name))
+        raise SchemeError(msg.format(k, name, type_name, predicate))
     return val
 
 @builtin("boolean?")

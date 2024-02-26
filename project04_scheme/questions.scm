@@ -6,7 +6,20 @@
 ; Some utility functions that you may find useful to implement.
 
 (define (cons-all first rests)
-  'replace-this-line)
+  (begin ;(displayln first) (displayln rests)
+  (if (null? rests)
+    '()
+    (if (list? first)
+      (cons (append first (car rests)) (cons-all first (cdr rests)))
+      (cons (append (cons first nil) (car rests)) (cons-all first (cdr rests)))))))
+
+(define (cons-all-dbg first rests)
+  (begin ;(displayln first) (displayln rests)
+    (cons-all first rests)))
+
+; (cons-all-dbg '(0 0) '((2 3) (2 4) (3 5)))
+; (cons-all-dbg '(0 0) '((3) (4) (5)))
+; (exit)
 
 (define (zip pairs)
   'replace-this-line)
@@ -15,7 +28,12 @@
 ;; Returns a list of two-element lists
 (define (enumerate s)
   ; BEGIN PROBLEM 16
-  'replace-this-line
+    (define mk (lambda (x a) 
+      (if (null? a)
+          nil
+          (cons (cons x (cons (car a) nil)) (mk (+ x 1) (cdr a))))
+      ))
+    (mk 0 s)
   )
   ; END PROBLEM 16
 
@@ -23,7 +41,21 @@
 ;; List all ways to make change for TOTAL with DENOMS
 (define (list-change total denoms)
   ; BEGIN PROBLEM 17
-  'replace-this-line
+  (define denoms (filter (lambda (x) (>= total x)) denoms))
+  (if (<= total 0)
+    '(nil)
+    (begin
+      (define (created d) (cons d
+                            (if (null? (cdr d))
+                              nil
+                              (created (cdr d)))))
+      (define test (created denoms))
+      ; (displayln test)
+      (append
+        (map (lambda (d)
+                (append (map (lambda (e) (cons-all-dbg (car d) e)) (list-change (- total (car d)) d))))
+              test)))
+    )
   )
   ; END PROBLEM 17
 

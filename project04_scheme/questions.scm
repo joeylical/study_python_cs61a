@@ -9,20 +9,43 @@
   (begin ;(displayln first) (displayln rests)
   (if (null? rests)
     '()
-    (if (list? first)
-      (cons (append first (car rests)) (cons-all first (cdr rests)))
-      (cons (append (cons first nil) (car rests)) (cons-all first (cdr rests)))))))
+    (cons (cons first (car rests)) (cons-all first (cdr rests))))))
+    ; (if (list? first)
+    ;   (cons (append first (car rests)) (cons-all first (cdr rests)))
+    ;   (append (append (cons first nil) (car rests)) (cons-all first (cdr rests)))))))
 
 (define (cons-all-dbg first rests)
-  (begin ;(displayln first) (displayln rests)
+  (begin 
+    ; (display "DEBUG: ")
+    ; (displayln first) 
+    ; (display "DEBUG: ")
+    ; (displayln rests)
     (cons-all first rests)))
 
-; (cons-all-dbg '(0 0) '((2 3) (2 4) (3 5)))
+; (cons-all-dbg '1 '((2 3) (2 4) (3 5)))
 ; (cons-all-dbg '(0 0) '((3) (4) (5)))
 ; (exit)
 
 (define (zip pairs)
-  'replace-this-line)
+  (begin
+    (display "DEBUG: ")
+    (displayln pairs)
+    (if (null? pairs)
+      pairs
+      (if (null? (car pairs))
+        ; (cons (map car pairs) nil)
+        ; (map (lambda (x) '()) pairs)
+        nil
+        (cons (map car pairs) (zip (map cdr pairs)))
+        ))))
+
+; (zip '((1 2) (3 4) (5 6)))
+; ; ((1 3 5) (2 4 6))
+; (zip '((1 2)))
+; ; ((1) (2))
+; (zip '())
+; ; (() ())
+; (exit)
 
 ;; Problem 16
 ;; Returns a list of two-element lists
@@ -39,23 +62,42 @@
 
 ;; Problem 17
 ;; List all ways to make change for TOTAL with DENOMS
-(define (list-change total denoms)
+(define (real-list-change total denoms)
   ; BEGIN PROBLEM 17
   (define denoms (filter (lambda (x) (>= total x)) denoms))
   (if (<= total 0)
-    '(nil)
+    '((nil))
     (begin
       (define (created d) (cons d
                             (if (null? (cdr d))
                               nil
                               (created (cdr d)))))
       (define test (created denoms))
-      ; (displayln test)
-      (append
-        (map (lambda (d)
-                (append (map (lambda (e) (cons-all-dbg (car d) e)) (list-change (- total (car d)) d))))
+      
+      ; reduce append is importent
+      (reduce append (map (lambda (d)
+              (map (lambda (e) (cons-all-dbg (car d) e)) (real-list-change (- total (car d)) d)))
               test)))
     )
+  )
+  ; END PROBLEM 
+(define (list-change total denoms)
+  ; BEGIN PROBLEM 17
+  (begin
+    (define result (real-list-change total denoms))
+    ; the result is a tree
+    ; need to flat the tree into a list
+    (display "DEBUG: ")
+    (displayln result)
+    (define (flat l)
+      (begin
+        (display "DEBUG: ")
+        (displayln l)
+        (if (list? (caar l))
+          (reduce append (map flat l))
+          l)))
+      
+    (flat result))
   )
   ; END PROBLEM 17
 
@@ -73,12 +115,12 @@
 (define (let-to-lambda expr)
   (cond ((atom? expr)
          ; BEGIN PROBLEM 18
-         'replace-this-line
+         expr
          ; END PROBLEM 18
          )
         ((quoted? expr)
          ; BEGIN PROBLEM 18
-         'replace-this-line
+         (quote expr)
          ; END PROBLEM 18
          )
         ((or (lambda? expr)
@@ -87,18 +129,18 @@
                (params (cadr expr))
                (body   (cddr expr)))
            ; BEGIN PROBLEM 18
-           'replace-this-line
+           '((lambda (form) body) params)
            ; END PROBLEM 18
            ))
         ((let? expr)
          (let ((values (cadr expr))
                (body   (cddr expr)))
            ; BEGIN PROBLEM 18
-           'replace-this-line
+           (let-to-lambda (zip values))
            ; END PROBLEM 18
            ))
         (else
          ; BEGIN PROBLEM 18
-         'replace-this-line
+         (quote expr)
          ; END PROBLEM 18
          )))

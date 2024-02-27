@@ -688,6 +688,17 @@ def optimize_tail_calls(prior_eval_function):
         result = Thunk(expr, env)
         # BEGIN
         "*** YOUR CODE HERE ***"
+        print('DEBUG: ', expr)
+        if not scheme_listp(expr):
+            raise SchemeError('malformed list: {0}'.format(repl_str(expr)))
+
+        first, rest = expr.first, expr.rest
+        if scheme_symbolp(first) and first in SPECIAL_FORMS:
+            return Thunk(lambda : SPECIAL_FORMS[first](rest, env), env)
+        else:
+            first = optimized_eval(expr.first, env)
+            rest = expr.rest.map(lambda x:optimized_eval(x, env))
+            return scheme_apply(first, rest, env)
         # END
     return optimized_eval
 

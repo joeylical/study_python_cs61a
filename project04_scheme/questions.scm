@@ -120,7 +120,8 @@
          )
         ((quoted? expr)
          ; BEGIN PROBLEM 18
-         (quote expr)
+          (begin
+            expr)
          ; END PROBLEM 18
          )
         ((or (lambda? expr)
@@ -129,18 +130,24 @@
                (params (cadr expr))
                (body   (cddr expr)))
            ; BEGIN PROBLEM 18
-           '((lambda (form) body) params)
+           (begin
+            (cons form (cons params (map let-to-lambda body))))
            ; END PROBLEM 18
            ))
         ((let? expr)
          (let ((values (cadr expr))
                (body   (cddr expr)))
            ; BEGIN PROBLEM 18
-           (let-to-lambda (zip values))
+           (begin 
+            (define p (zip values))
+            (define formal (car p))
+            (define params (car (cdr p)))
+           (append (cons (cons 'lambda (cons formal (map let-to-lambda body))) nil) (map let-to-lambda params)))
            ; END PROBLEM 18
            ))
         (else
          ; BEGIN PROBLEM 18
-         (quote expr)
+          (begin
+            (map let-to-lambda expr))
          ; END PROBLEM 18
          )))

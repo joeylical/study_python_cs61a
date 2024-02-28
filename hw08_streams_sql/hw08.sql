@@ -26,29 +26,48 @@ CREATE TABLE sizes AS
 
 -- The size of each dog
 CREATE TABLE size_of_dogs AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+  SELECT name, size from dogs, sizes where height > min and height <= max;
 
 
 -- All dogs with parents ordered by decreasing height of their parent
 CREATE TABLE by_parent_height AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+  SELECT child from parents, dogs where parent=name order by height desc;
 
 
 -- Filling out this helper table is optional
 CREATE TABLE siblings AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+  SELECT a.name as first, b.name as second, a.size as size
+    from  size_of_dogs as a, 
+          size_of_dogs as b,
+          parents as c,
+          parents as d
+    where a.size = b.size
+      and a.name < b.name
+      and c.child = a.name
+      and d.child = b.name
+      and c.parent = d.parent;
 
 -- Sentences about siblings that are the same size
 CREATE TABLE sentences AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+  SELECT first || " and " || second || " are " || size || " siblings" from siblings;
 
 
 -- Ways to stack 4 dogs to a height of at least 170, ordered by total height
 CREATE TABLE stacks_helper(dogs, stack_height, last_height, n);
 
 -- Add your INSERT INTOs here
+create table t1 as
+  select a.name || ", " || b.name || ", " || c.name || ", " || d.name, a.height+b.height+c.height+d.height, d.height, 4
+    from dogs as a,
+         dogs as b,
+         dogs as c,
+         dogs as d
+    where a.height < b.height
+      and b.height < c.height
+      and c.height < d.height;
 
+insert into stacks_helper select * from t1;
 
 CREATE TABLE stacks AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+  SELECT dogs, stack_height from stacks_helper where stack_height > 170 order by stack_height;
 

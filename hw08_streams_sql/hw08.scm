@@ -20,7 +20,19 @@
 
 (define (group-by-nondecreasing s)
     ; cons-stream in cons-stream
-    )
+    (if (null? s)
+        '()
+        (begin
+            (define (seq s max chain)
+                (if (null? s)
+                    (cons chain s)
+                    (if (<= max (car s))
+                        (seq (cdr-stream s) (car s) (append chain (cons (car s) nil)))
+                        (cons chain s))))
+            (define result (seq s (car s) '()))
+            (define chain (car result))
+            (define news (cdr result))
+            (cons-stream chain (group-by-nondecreasing news)))))
 
 
 (define finite-test-stream

@@ -19,7 +19,17 @@ def in_order_traversal(t):
     >>> list(in_order_traversal(t))
     [4, 2, 6, 5, 7, 1, 3]
     """
-    "*** YOUR CODE HERE ***"
+    def IOT(t:Tree, result:list):
+        if t.is_leaf():
+            result.append(t.label)
+        else:
+            IOT(t.branches[0], result)
+            result.append(t.label)
+            IOT(t.branches[1], result)
+    
+    result = []
+    IOT(t, result)
+    return result
 
 
 def summation(n, term):
@@ -45,6 +55,15 @@ def interleaved_sum(n, odd_term, even_term):
     True
     """
     "*** YOUR CODE HERE ***"
+    def isum(i, n):
+        if i == n:
+            return even_term(i)
+        elif i == n-1:
+            return even_term(i) + odd_term(i+1)
+        else:
+            return isum(i+2, n) + even_term(i) + odd_term(i + 1)
+    
+    return isum(0, n)
 
 
 def mutate_reverse(link):
@@ -61,7 +80,35 @@ def mutate_reverse(link):
     Link(3, Link(2, Link(1)))
     """
     "*** YOUR CODE HERE ***"
+    # labels = []
+    # origin_link = link
+    # while link is not Link.empty:
+    #     labels.append(link.first)
+    #     link = link.rest
+    
+    # link = origin_link
+    # while link is not Link.empty:
+    #     link.first = labels[-1]
+    #     labels = labels[:-1]
+    #     link = link.rest
 
+    if link is Link.empty or link.rest is Link.empty:
+        return
+    last = Link.empty
+    tail = Link(link.first, last)
+    first = link
+    last = tail
+    link = link.rest
+    while link is not Link.empty:
+        print('DEBUG: ', link.first, last)
+        rest = link.rest
+        
+        link.rest = last
+
+        last = link
+        link = rest
+    first.first = last.first
+    first.rest = last.rest
 
 class Tree:
     """
